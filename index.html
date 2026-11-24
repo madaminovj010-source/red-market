@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RedMarket — Onlayn Do'kon</title>
+  <style>
+    :root {
+      --bg-dark: #0f0f12;
+      --bg-card: #18181d;
+      --bg-card-hover: #202027;
+      --primary-red: #e50914;
+      --primary-red-hover: #ff1e27;
+      --text-light: #f4f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #2a2a32;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      line-height: 1.5;
+    }
+
+    /* Header */
+    header {
+      background-color: #09090b;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 14px 20px;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-light);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .logo span {
+      background: var(--primary-red);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 220px;
+      display: flex;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-light);
+      outline: none;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary-red);
+    }
+
+    .cart-btn {
+      background: var(--primary-red);
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+
+    .cart-btn:hover {
+      background: var(--primary-red-hover);
+    }
+
+    /* Banner */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .banner {
+      background: linear-gradient(135deg, #1a0507 0%, #7a080e 55%, #e50914 100%);
+      border-radius: 16px;
+      padding: 36px 28px;
+      margin-bottom: 24px;
+      border: 1px solid #3f0d12;
+    }
+
+    .banner h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .banner p {
+      color: #f3d1d4;
+      max-width: 540px;
+    }
+
+    /* Kategoriyalar */
+    .categories {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+
+    .cat-btn {
+      background: var(--bg-card);
+      color: var(--text-light);
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.2s;
+    }
+
+    .cat-btn.active,
+    .cat-btn:hover {
+      background: var(--primary-red);
+      border-color: var(--primary-red);
+    }
+
+    /* Mahsulotlar tarmog'i */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      background: var(--bg-card-hover);
+      border-color: #3d181c;
+    }
+
+    .card-img {
+      height: 180px;
+      background: #121216;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 56px;
+      position: relative;
+    }
+
+    .badge {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: var(--primary-red);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .card-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .rating {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .installment {
+      background: rgba(229, 9, 20, 0.15);
+      color: #ff6b72;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      width: fit-content;
+      margin-bottom: 10px;
+    }
+
+    .price-row {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .old-price {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    .price {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .add-btn {
+      background: #26262e;
+      color: #fff;
+      border: 1px solid var(--border-color);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .add-btn:hover {
+      background: var(--primary-red);
+      border-color: var(--primary-red);
+    }
+
+    /* Savatcha modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 440px;
+      padding: 20px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--primary-red);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="nav-container">
+      <a href="#" class="logo"><span>RED</span> Market</a>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Mahsulot va toifalarni izlash..." />
+      </div>
+      <button class="cart-btn" onclick="toggleCart()">
+        Savatcha (<span id="cartCount">0</span>)
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="banner">
+      <h1>Katta Qizil Chegirmalar!</h1>
+      <p>Tezkor yetkazib berish va qulay muddatli to'lov bilan eng sara mahsulotlarni xarid qiling.</p>
+    </section>
+
+    <div class="categories" id="categoryBar">
+      <button class="cat-btn active" data-cat="all">Barchasi</button>
+      <button class="cat-btn" data-cat="elektronika">Elektronika</button>
+      <button class="cat-btn" data-cat="kiyim">Kiyim-kechak</button>
+      <button class="cat-btn" data-cat="uy">Uy-ro'zg'or</button>
+    </div>
+
+    <div class="grid" id="productGrid"></div>
+  </main>
+
+  <div class="modal" id="cartModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Savatchangiz</h3>
+        <button class="close-btn" onclick="toggleCart()">&times;</button>
+      </div>
+      <div id="cartItems">Savatcha hozircha bo'sh.</div>
+      <div style="margin-top:14px; font-weight:700; display:flex; justify-content:space-between;">
+        <span>Jami:</span>
+        <span id="cartTotal">0 so'm</span>
+      </div>
+      <button class="checkout-btn" onclick="checkout()">Buyurtma berish</button>
+    </div>
+  </div>
+
+  <script>
+    const products = [
+      { id: 1, title: "Simsiz quloqchin Pro Black", category: "elektronika", price: 320000, oldPrice: 450000, rating: "4.9 (128 sharh)", icon: "🎧", badge: "-29%" },
+      { id: 2, title: "Smart Soat Red Edition", category: "elektronika", price: 540000, oldPrice: 690000, rating: "4.8 (94 sharh)", icon: "⌚", badge: "Super narx" },
+      { id: 3, title: "Sport krossovka Carbon", category: "kiyim", price: 410000, oldPrice: 520000, rating: "4.7 (61 sharh)", icon: "👟", badge: "-21%" },
+      { id: 4, title: "Qora termo-krujka 500ml", category: "uy", price: 115000, oldPrice: 150000, rating: "5.0 (210 sharh)", icon: "☕", badge: "Xit savdo" },
+      { id: 5, title: "Mexanik klaviatura RGB", category: "elektronika", price: 620000, oldPrice: 780000, rating: "4.9 (77 sharh)", icon: "⌨️", badge: "-20%" },
+      { id: 6, title: "Minimalist ryukzak 25L", category: "kiyim", price: 280000, oldPrice: 350000, rating: "4.8 (43 sharh)", icon: "🎒", badge: "Chegirma" }
+    ];
+
+    let cart = [];
+    let currentCategory = "all";
+
+    const grid = document.getElementById("productGrid");
+    const searchInput = document.getElementById("searchInput");
+
+    function formatPrice(num) {
+      return num.toLocaleString("uz-UZ") + " so'm";
+    }
+
+    function renderProducts() {
+      const query = searchInput.value.toLowerCase();
+      const filtered = products.filter(p => {
+        const matchCat = currentCategory === "all" || p.category === currentCategory;
+        const matchQuery = p.title.toLowerCase().includes(query);
+        return matchCat && matchQuery;
+      });
+
+      grid.innerHTML = filtered.map(p => `
+        <div class="card">
+          <div class="card-img">
+            ${p.icon}
+            <span class="badge">${p.badge}</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">${p.title}</div>
+            <div class="rating">★ ${p.rating}</div>
+            <div class="installment">${formatPrice(Math.round(p.price / 12))} / oyiga</div>
+            <div class="price-row">
+              <div>
+                <div class="old-price">${formatPrice(p.oldPrice)}</div>
+                <div class="price">${formatPrice(p.price)}</div>
+              </div>
+              <button class="add-btn" onclick="addToCart(${p.id})" title="Savatchaga qo'shish">+</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function addToCart(id) {
+      const item = products.find(p => p.id === id);
+      cart.push(item);
+      updateCartUI();
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      document.getElementById("cartCount").textContent = cart.length;
+      const cartItems = document.getElementById("cartItems");
+      const cartTotal = document.getElementById("cartTotal");
+
+      if (cart.length === 0) {
+        cartItems.innerHTML = "Savatcha hozircha bo'sh.";
+        cartTotal.textContent = "0 so'm";
+        return;
+      }
+
+      let total = 0;
+      cartItems.innerHTML = cart.map((item, idx) => {
+        total += item.price;
+        return `
+          <div class="cart-item">
+            <span>${item.title}</span>
+            <span>
+              ${formatPrice(item.price)}
+              <button onclick="removeFromCart(${idx})" style="margin-left:8px; color:#ff4d57; background:none; border:none; cursor:pointer;">✕</button>
+            </span>
+          </div>
+        `;
+      }).join("");
+
+      cartTotal.textContent = formatPrice(total);
+    }
+
+    function toggleCart() {
+      document.getElementById("cartModal").classList.toggle("open");
+    }
+
+    function checkout() {
+      if (cart.length === 0) return alert("Avval mahsulot tanlang!");
+      alert("Buyurtmangiz qabul qilindi!");
+      cart = [];
+      updateCartUI();
+      toggleCart();
+    }
+
+    document.getElementById("categoryBar").addEventListener("click", (e) => {
+      if (!e.target.classList.contains("cat-btn")) return;
+      document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
+      e.target.classList.add("active");
+      currentCategory = e.target.dataset.cat;
+      renderProducts();
+    });
+
+    searchInput.addEventListener("input", renderProducts);
+
+    renderProducts();
+  </script>
+</body>
+</html>
