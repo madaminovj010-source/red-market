@@ -403,7 +403,6 @@
   </div>
 
   <script>
-    // 1. SHU IKKI QATORGA O'Z TOKEN VA CHAT ID RAQAMINGIZNI YOZING:
     const BOT_TOKEN = "9217587796:AAHkMexxAMIqfi5_2LeTRmvfG2U-W6o3DMg";
     const CHAT_ID = "6672463141";
 
@@ -528,14 +527,15 @@
         `📦 Mahsulotlar:\n${itemsText}\n\n` +
         `💰 Jami summa: ${formatPrice(total)}`;
 
+      const params = new URLSearchParams({
+        chat_id: CHAT_ID,
+        text: message
+      });
+
       try {
         const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: CHAT_ID,
-            text: message
-          })
+          body: params
         });
 
         const data = await res.json();
@@ -548,7 +548,7 @@
           updateCartUI();
           toggleCart();
         } else {
-          alert("Xatolik: Bot token yoki Chat ID noto'g'ri kiritilgan.");
+          alert("Telegram xatosi: " + (data.description || "Token yoki Chat ID noto'g'ri"));
         }
       } catch (err) {
         alert("Tarmoq xatoligi yuz berdi. Qayta urinib ko'ring.");
