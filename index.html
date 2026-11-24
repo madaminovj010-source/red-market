@@ -29,7 +29,6 @@
       line-height: 1.5;
     }
 
-    /* Header */
     header {
       background-color: #09090b;
       border-bottom: 1px solid var(--border-color);
@@ -57,13 +56,12 @@
       align-items: center;
       gap: 6px;
     }
-.logo span {
-  background: var(--primary-red);
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: 6px;
-}
-    
+
+    .logo span {
+      background: var(--primary-red);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 6px;
     }
 
     .search-box {
@@ -104,7 +102,6 @@
       background: var(--primary-red-hover);
     }
 
-    /* Banner */
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -129,7 +126,6 @@
       max-width: 540px;
     }
 
-    /* Kategoriyalar */
     .categories {
       display: flex;
       gap: 10px;
@@ -155,7 +151,6 @@
       border-color: var(--primary-red);
     }
 
-    /* Mahsulotlar tarmog'i */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -266,7 +261,6 @@
       border-color: var(--primary-red);
     }
 
-    /* Savatcha modal */
     .modal {
       display: none;
       position: fixed;
@@ -317,9 +311,30 @@
       font-size: 14px;
     }
 
+    .order-inputs {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .order-inputs input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: #121216;
+      color: var(--text-light);
+      outline: none;
+    }
+
+    .order-inputs input:focus {
+      border-color: var(--primary-red);
+    }
+
     .checkout-btn {
       width: 100%;
-      margin-top: 16px;
+      margin-top: 14px;
       padding: 12px;
       background: var(--primary-red);
       color: #fff;
@@ -328,13 +343,18 @@
       font-weight: 700;
       cursor: pointer;
     }
+
+    .checkout-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
 
   <header>
     <div class="nav-container">
-     <a href="#" class="logo"><span>JAMSHID DD</span> Market</a> 
+      <a href="#" class="logo"><span>JAMSHID DD</span> Market</a>
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="Mahsulot va toifalarni izlash..." />
       </div>
@@ -371,11 +391,22 @@
         <span>Jami:</span>
         <span id="cartTotal">0 so'm</span>
       </div>
-      <button class="checkout-btn" onclick="checkout()">Buyurtma berish</button>
+
+      <div class="order-inputs">
+        <input type="text" id="customerName" placeholder="Ismingiz" />
+        <input type="tel" id="customerPhone" placeholder="Telefon raqamingiz (+998...)" />
+        <input type="text" id="customerAddress" placeholder="Manzilingiz (ixtiyoriy)" />
+      </div>
+
+      <button class="checkout-btn" id="checkoutBtn" onclick="checkout()">Buyurtma berish</button>
     </div>
   </div>
 
   <script>
+    // 1. SHU IKKI QATORGA O'Z TOKEN VA CHAT ID RAQAMINGIZNI YOZING:
+    const 9217587796:AAHHdsCf-TyOFFfXttZjCeXjTArTCT3yiuA = "BU_YERGA_6672463141_YOZING";
+    const CHAT_ID = "BU_YERGA_CHAT_ID_YOZING";
+
     const products = [
       { id: 1, title: "Simsiz quloqchin Pro Black", category: "elektronika", price: 320000, oldPrice: 450000, rating: "4.9 (128 sharh)", icon: "🎧", badge: "-29%" },
       { id: 2, title: "Smart Soat Red Edition", category: "elektronika", price: 540000, oldPrice: 690000, rating: "4.8 (94 sharh)", icon: "⌚", badge: "Super narx" },
@@ -468,12 +499,63 @@
       document.getElementById("cartModal").classList.toggle("open");
     }
 
-    function checkout() {
+    async function checkout() {
       if (cart.length === 0) return alert("Avval mahsulot tanlang!");
-      alert("Buyurtmangiz qabul qilindi!");
-      cart = [];
-      updateCartUI();
-      toggleCart();
+
+      const name = document.getElementById("customerName").value.trim();
+      const phone = document.getElementById("customerPhone").value.trim();
+      const address = document.getElementById("customerAddress").value.trim();
+
+      if (!name || !phone) {
+        return alert("Iltimos, ismingiz va telefon raqamingizni kiriting!");
+      }
+
+      const btn = document.getElementById("checkoutBtn");
+      btn.disabled = true;
+      btn.textContent = "Yuborilmoqda...";
+
+      let total = 0;
+      const itemsText = cart.map((item, i) => {
+        total += item.price;
+        return `${i + 1}. ${item.title} — ${formatPrice(item.price)}`;
+      }).join("\n");
+
+      const message =
+        `🛒 YANGI BUYURTMA (Jamshid DD Market)\n\n` +
+        `👤 Mijoz: ${name}\n` +
+        `📞 Telefon: ${phone}\n` +
+        `📍 Manzil: ${address || "Ko'rsatilmagan"}\n\n` +
+        `📦 Mahsulotlar:\n${itemsText}\n\n` +
+        `💰 Jami summa: ${formatPrice(total)}`;
+
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: message
+          })
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+          alert("Buyurtmangiz qabul qilindi! Tez orada bog'lanamiz.");
+          cart = [];
+          document.getElementById("customerName").value = "";
+          document.getElementById("customerPhone").value = "";
+          document.getElementById("customerAddress").value = "";
+          updateCartUI();
+          toggleCart();
+        } else {
+          alert("Xatolik: Bot token yoki Chat ID noto'g'ri kiritilgan.");
+        }
+      } catch (err) {
+        alert("Tarmoq xatoligi yuz berdi. Qayta urinib ko'ring.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Buyurtma berish";
+      }
     }
 
     document.getElementById("categoryBar").addEventListener("click", (e) => {
